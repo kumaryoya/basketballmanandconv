@@ -70,3 +70,11 @@
 .font-quicksand {
   font-family: 'Quicksand', sans-serif;
 }
+
+.font-noto {
+  font-family: 'Noto Sans JP', sans-serif;
+}
+
+body {
+  font-family: 'Noto Sans JP', 'Inter', sans-serif;
+}

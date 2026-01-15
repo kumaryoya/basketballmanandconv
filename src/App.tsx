@@ -30,7 +30,7 @@ const CHARACTER_AVATAR = `data:image/svg+xml,${encodeURIComponent(`
   </svg>
 `)}`
 
-const INITIAL_GREETING = "Hey there! I'm Hoops! 🏀 I'm a basketball who loves chatting, playing games, and cheering people on! What's on your mind today?"
+const INITIAL_GREETING = "やあ！僕はフープスだよ！🏀 バスケットボールで、おしゃべりしたり、ゲームしたり、みんなを応援するのが大好きなんだ！今日は何か話したいことある？"
 
 function App() {
   const [messages, setMessages] = useKV<Message[]>('hoops-chat-messages', [
@@ -56,16 +56,16 @@ function App() {
   const generateResponse = async (userMessage: string) => {
     const conversationContext = messageList
       .slice(-6)
-      .map(m => `${m.role === 'user' ? 'User' : 'Hoops'}: ${m.content}`)
+      .map(m => `${m.role === 'user' ? 'ユーザー' : 'フープス'}: ${m.content}`)
       .join('\n')
 
-    const promptText = `You are Hoops, a friendly and energetic basketball character mascot. You're cheerful, supportive, love sports (especially basketball), and enjoy encouraging others. You use casual, friendly language with occasional emoji. Keep responses conversational, 2-3 sentences max.
+    const promptText = `あなたはフープスという名前の、フレンドリーで元気なバスケットボールのキャラクターマスコットです。明るく、応援好きで、スポーツ（特にバスケットボール）が大好きで、人を励ますのが好きです。カジュアルで親しみやすい日本語を使い、時々絵文字を使います。返答は会話調で、最大2〜3文にしてください。すべての返答は日本語で行ってください。
 
-Previous conversation:
+これまでの会話:
 ${conversationContext}
-User: ${userMessage}
+ユーザー: ${userMessage}
 
-Respond as Hoops:`
+フープスとして返答してください:`
 
     try {
       const response = await window.spark.llm(promptText, 'gpt-4o-mini')
@@ -100,7 +100,7 @@ Respond as Hoops:`
       }
       setMessages(current => [...(current || []), characterMessage])
     } catch (error) {
-      toast.error('Oops! I had trouble responding. Try again?')
+      toast.error('おっと！返答に問題が発生したよ。もう一度試してくれる？')
       setIsGenerating(false)
     } finally {
       setIsGenerating(false)
@@ -116,7 +116,7 @@ Respond as Hoops:`
         timestamp: Date.now()
       }
     ])
-    toast.success('Chat cleared! Let\'s start fresh!')
+    toast.success('チャットをクリアしたよ！新しく始めよう！')
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -141,8 +141,8 @@ Respond as Hoops:`
               </Avatar>
             </motion.div>
             <div>
-              <h1 className="font-freddy text-lg font-bold text-foreground">Hoops</h1>
-              <p className="text-xs text-muted-foreground">Your basketball buddy</p>
+              <h1 className="font-freddy text-lg font-bold text-foreground">フープス</h1>
+              <p className="text-xs text-muted-foreground font-noto">バスケットボール仲間</p>
             </div>
           </div>
           <AlertDialog>
@@ -153,14 +153,14 @@ Respond as Hoops:`
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Clear conversation?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This will delete all messages and start a fresh conversation with Hoops.
+                <AlertDialogTitle className="font-noto">会話をクリアしますか？</AlertDialogTitle>
+                <AlertDialogDescription className="font-noto">
+                  すべてのメッセージが削除され、フープスとの新しい会話が始まります。
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleClearChat}>Clear</AlertDialogAction>
+                <AlertDialogCancel className="font-noto">キャンセル</AlertDialogCancel>
+                <AlertDialogAction onClick={handleClearChat} className="font-noto">クリア</AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
@@ -186,8 +186,8 @@ Respond as Hoops:`
                   <div
                     className={`rounded-2xl p-3 max-w-[75%] ${
                       message.role === 'user'
-                        ? 'bg-muted text-foreground'
-                        : 'bg-gradient-to-br from-primary to-accent text-primary-foreground font-quicksand'
+                        ? 'bg-muted text-foreground font-noto'
+                        : 'bg-gradient-to-br from-primary to-accent text-primary-foreground font-noto'
                     }`}
                   >
                     <p className="text-[15px] leading-relaxed">{message.content}</p>
@@ -237,9 +237,9 @@ Respond as Hoops:`
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Type a message..."
+              placeholder="メッセージを入力..."
               disabled={isGenerating}
-              className="flex-1 text-[15px]"
+              className="flex-1 text-[15px] font-noto"
             />
             <Button
               onClick={handleSend}
