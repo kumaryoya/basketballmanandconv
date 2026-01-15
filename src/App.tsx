@@ -44,12 +44,16 @@ function App() {
   const [input, setInput] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
+  const scrollAreaRef = useRef<HTMLDivElement>(null)
 
   const messageList = messages || []
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+    if (scrollAreaRef.current) {
+      const scrollElement = scrollAreaRef.current.querySelector('[data-radix-scroll-area-viewport]')
+      if (scrollElement) {
+        scrollElement.scrollTop = scrollElement.scrollHeight
+      }
     }
   }, [messages])
 
@@ -166,69 +170,71 @@ ${conversationContext}
           </AlertDialog>
         </div>
 
-        <ScrollArea className="flex-1 p-6" ref={scrollRef}>
-          <div className="space-y-4">
-            <AnimatePresence initial={false}>
-              {messageList.map((message) => (
+        <div className="flex-1 overflow-hidden">
+          <ScrollArea className="h-full p-6" ref={scrollAreaRef}>
+            <div className="space-y-4 pb-4" ref={scrollRef}>
+              <AnimatePresence initial={false}>
+                {messageList.map((message) => (
+                  <motion.div
+                    key={message.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                    className={`flex gap-3 ${message.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
+                  >
+                    {message.role === 'character' && (
+                      <Avatar className="w-10 h-10 border-2 border-primary flex-shrink-0 mt-1">
+                        <AvatarImage src={CHARACTER_AVATAR} alt="Hoops" />
+                        <AvatarFallback>🏀</AvatarFallback>
+                      </Avatar>
+                    )}
+                    <div
+                      className={`rounded-2xl p-3 min-w-0 break-words ${
+                        message.role === 'user'
+                          ? 'bg-muted text-foreground font-noto max-w-[75%]'
+                          : 'bg-gradient-to-br from-primary to-accent text-primary-foreground font-noto max-w-[calc(75%-52px)]'
+                      }`}
+                    >
+                      <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+
+              {isGenerating && (
                 <motion.div
-                  key={message.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                  className={`flex gap-3 ${message.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}
+                  className="flex gap-3"
                 >
-                  {message.role === 'character' && (
-                    <Avatar className="w-10 h-10 border-2 border-primary flex-shrink-0">
-                      <AvatarImage src={CHARACTER_AVATAR} alt="Hoops" />
-                      <AvatarFallback>🏀</AvatarFallback>
-                    </Avatar>
-                  )}
-                  <div
-                    className={`rounded-2xl p-3 max-w-[75%] ${
-                      message.role === 'user'
-                        ? 'bg-muted text-foreground font-noto'
-                        : 'bg-gradient-to-br from-primary to-accent text-primary-foreground font-noto'
-                    }`}
-                  >
-                    <p className="text-[15px] leading-relaxed">{message.content}</p>
+                  <Avatar className="w-10 h-10 border-2 border-primary flex-shrink-0 mt-1">
+                    <AvatarImage src={CHARACTER_AVATAR} alt="Hoops" />
+                    <AvatarFallback>🏀</AvatarFallback>
+                  </Avatar>
+                  <div className="bg-gradient-to-br from-primary to-accent text-primary-foreground rounded-2xl p-3">
+                    <div className="flex gap-1">
+                      <motion.div
+                        animate={{ y: [0, -8, 0] }}
+                        transition={{ repeat: Infinity, duration: 0.6, delay: 0 }}
+                        className="w-2 h-2 bg-primary-foreground rounded-full"
+                      />
+                      <motion.div
+                        animate={{ y: [0, -8, 0] }}
+                        transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 }}
+                        className="w-2 h-2 bg-primary-foreground rounded-full"
+                      />
+                      <motion.div
+                        animate={{ y: [0, -8, 0] }}
+                        transition={{ repeat: Infinity, duration: 0.6, delay: 0.4 }}
+                        className="w-2 h-2 bg-primary-foreground rounded-full"
+                      />
+                    </div>
                   </div>
                 </motion.div>
-              ))}
-            </AnimatePresence>
-
-            {isGenerating && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex gap-3"
-              >
-                <Avatar className="w-10 h-10 border-2 border-primary flex-shrink-0">
-                  <AvatarImage src={CHARACTER_AVATAR} alt="Hoops" />
-                  <AvatarFallback>🏀</AvatarFallback>
-                </Avatar>
-                <div className="bg-gradient-to-br from-primary to-accent text-primary-foreground rounded-2xl p-3">
-                  <div className="flex gap-1">
-                    <motion.div
-                      animate={{ y: [0, -8, 0] }}
-                      transition={{ repeat: Infinity, duration: 0.6, delay: 0 }}
-                      className="w-2 h-2 bg-primary-foreground rounded-full"
-                    />
-                    <motion.div
-                      animate={{ y: [0, -8, 0] }}
-                      transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 }}
-                      className="w-2 h-2 bg-primary-foreground rounded-full"
-                    />
-                    <motion.div
-                      animate={{ y: [0, -8, 0] }}
-                      transition={{ repeat: Infinity, duration: 0.6, delay: 0.4 }}
-                      className="w-2 h-2 bg-primary-foreground rounded-full"
-                    />
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </div>
-        </ScrollArea>
+              )}
+            </div>
+          </ScrollArea>
+        </div>
 
         <div className="p-6 border-t border-border">
           <div className="flex gap-2">
